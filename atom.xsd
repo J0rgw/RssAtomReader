@@ -1,0 +1,233 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           xmlns:atom="http://www.w3.org/2005/Atom"
+           targetNamespace="http://www.w3.org/2005/Atom"
+           elementFormDefault="qualified">
+
+  <!-- Atom Specification Schema -->
+  
+  <!-- Simple Types -->
+  <xs:simpleType name="atomDateConstruct">
+    <xs:annotation>
+      <xs:documentation>
+        A Date construct is an element whose content MUST conform to the
+        "date-time" production in RFC 3339.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="xs:string"/>
+  </xs:simpleType>
+
+  <xs:simpleType name="atomLanguageTag">
+    <xs:annotation>
+      <xs:documentation>
+        Language Tags per RFC 3066.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="xs:string"/>
+  </xs:simpleType>
+
+  <xs:simpleType name="atomEmailAddress">
+    <xs:annotation>
+      <xs:documentation>
+        Email address as defined by RFC 2822.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="xs:string"/>
+  </xs:simpleType>
+
+  <xs:simpleType name="atomUri">
+    <xs:annotation>
+      <xs:documentation>
+        An IRI as defined in RFC 3987.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="xs:anyURI"/>
+  </xs:simpleType>
+
+  <!-- Complex Types -->
+  <xs:complexType name="atomPersonConstruct">
+    <xs:annotation>
+      <xs:documentation>
+        The Person construct is an element that describes a person,
+        corporation, or similar entity.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="name" type="xs:string" minOccurs="1" maxOccurs="1"/>
+      <xs:element name="uri" type="atom:atomUri" minOccurs="0" maxOccurs="1"/>
+      <xs:element name="email" type="atom:atomEmailAddress" minOccurs="0" maxOccurs="1"/>
+      <xs:any namespace="##other" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence>
+    <xs:anyAttribute namespace="##other" processContents="lax"/>
+  </xs:complexType>
+
+  <xs:complexType name="atomTextConstruct">
+    <xs:annotation>
+      <xs:documentation>
+        The Text construct is used to define content of a textual nature.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:simpleContent>
+      <xs:extension base="xs:string">
+        <xs:attribute name="type">
+          <xs:simpleType>
+            <xs:restriction base="xs:string">
+              <xs:enumeration value="text"/>
+              <xs:enumeration value="html"/>
+              <xs:enumeration value="xhtml"/>
+            </xs:restriction>
+          </xs:simpleType>
+        </xs:attribute>
+        <xs:anyAttribute namespace="##other" processContents="lax"/>
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+
+  <xs:complexType name="atomContentConstruct">
+    <xs:annotation>
+      <xs:documentation>
+        The Content construct represents the content of an entry.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:simpleContent>
+      <xs:extension base="xs:string">
+        <xs:attribute name="type">
+          <xs:simpleType>
+            <xs:restriction base="xs:string">
+              <xs:enumeration value="text"/>
+              <xs:enumeration value="html"/>
+              <xs:enumeration value="xhtml"/>
+              <!-- Other values indicate a media type -->
+            </xs:restriction>
+          </xs:simpleType>
+        </xs:attribute>
+        <xs:attribute name="src" type="atom:atomUri"/>
+        <xs:anyAttribute namespace="##other" processContents="lax"/>
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+
+  <xs:complexType name="atomLinkConstruct">
+    <xs:annotation>
+      <xs:documentation>
+        The link element defines a reference from an entry or feed to
+        a Web resource.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:attributeGroup ref="atom:atomCommonAttributes"/>
+    <xs:attribute name="href" type="atom:atomUri" use="required"/>
+    <xs:attribute name="rel" type="xs:string"/>
+    <xs:attribute name="type" type="xs:string"/>
+    <xs:attribute name="hreflang" type="atom:atomLanguageTag"/>
+    <xs:attribute name="title" type="xs:string"/>
+    <xs:attribute name="length" type="xs:positiveInteger"/>
+  </xs:complexType>
+
+  <xs:complexType name="atomCategoryConstruct">
+    <xs:annotation>
+      <xs:documentation>
+        The category element conveys information about a category
+        associated with an entry or feed.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:attributeGroup ref="atom:atomCommonAttributes"/>
+    <xs:attribute name="term" type="xs:string" use="required"/>
+    <xs:attribute name="scheme" type="atom:atomUri"/>
+    <xs:attribute name="label" type="xs:string"/>
+  </xs:complexType>
+
+  <xs:complexType name="atomGeneratorConstruct">
+    <xs:annotation>
+      <xs:documentation>
+        The generator element identifies the agent used to generate
+        the feed.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:simpleContent>
+      <xs:extension base="xs:string">
+        <xs:attributeGroup ref="atom:atomCommonAttributes"/>
+        <xs:attribute name="uri" type="atom:atomUri"/>
+        <xs:attribute name="version" type="xs:string"/>
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+
+  <xs:complexType name="atomEntryConstruct">
+    <xs:annotation>
+      <xs:documentation>
+        The atom:entry element represents an individual entry, acting as
+        a container for metadata and data associated with the entry.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="author" type="atom:atomPersonConstruct" minOccurs="0" maxOccurs="unbounded"/>
+      <xs:element name="category" type="atom:atomCategoryConstruct" minOccurs="0" maxOccurs="unbounded"/>
+      <xs:element name="content" type="atom:atomContentConstruct" minOccurs="0" maxOccurs="1"/>
+      <xs:element name="contributor" type="atom:atomPersonConstruct" minOccurs="0" maxOccurs="unbounded"/>
+      <xs:element name="id" type="atom:atomUri" minOccurs="1" maxOccurs="1"/>
+      <xs:element name="link" type="atom:atomLinkConstruct" minOccurs="0" maxOccurs="unbounded"/>
+      <xs:element name="published" type="atom:atomDateConstruct" minOccurs="0" maxOccurs="1"/>
+      <xs:element name="rights" type="atom:atomTextConstruct" minOccurs="0" maxOccurs="1"/>
+      <xs:element name="source" minOccurs="0" maxOccurs="1">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="author" type="atom:atomPersonConstruct" minOccurs="0" maxOccurs="unbounded"/>
+            <xs:element name="category" type="atom:atomCategoryConstruct" minOccurs="0" maxOccurs="unbounded"/>
+            <xs:element name="contributor" type="atom:atomPersonConstruct" minOccurs="0" maxOccurs="unbounded"/>
+            <xs:element name="generator" type="atom:atomGeneratorConstruct" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="icon" type="atom:atomUri" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="id" type="atom:atomUri" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="link" type="atom:atomLinkConstruct" minOccurs="0" maxOccurs="unbounded"/>
+            <xs:element name="logo" type="atom:atomUri" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="rights" type="atom:atomTextConstruct" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="subtitle" type="atom:atomTextConstruct" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="title" type="atom:atomTextConstruct" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="updated" type="atom:atomDateConstruct" minOccurs="0" maxOccurs="1"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="summary" type="atom:atomTextConstruct" minOccurs="0" maxOccurs="1"/>
+      <xs:element name="title" type="atom:atomTextConstruct" minOccurs="1" maxOccurs="1"/>
+      <xs:element name="updated" type="atom:atomDateConstruct" minOccurs="1" maxOccurs="1"/>
+      <xs:any namespace="##other" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence>
+    <xs:attributeGroup ref="atom:atomCommonAttributes"/>
+  </xs:complexType>
+
+  <xs:complexType name="atomFeedConstruct">
+    <xs:annotation>
+      <xs:documentation>
+        The atom:feed element is the document (i.e., top-level) element of
+        an Atom Feed Document, acting as a container for metadata and data
+        associated with the feed.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="author" type="atom:atomPersonConstruct" minOccurs="0" maxOccurs="unbounded"/>
+      <xs:element name="category" type="atom:atomCategoryConstruct" minOccurs="0" maxOccurs="unbounded"/>
+      <xs:element name="contributor" type="atom:atomPersonConstruct" minOccurs="0" maxOccurs="unbounded"/>
+      <xs:element name="generator" type="atom:atomGeneratorConstruct" minOccurs="0" maxOccurs="1"/>
+      <xs:element name="icon" type="atom:atomUri" minOccurs="0" maxOccurs="1"/>
+      <xs:element name="id" type="atom:atomUri" minOccurs="1" maxOccurs="1"/>
+      <xs:element name="link" type="atom:atomLinkConstruct" minOccurs="0" maxOccurs="unbounded"/>
+      <xs:element name="logo" type="atom:atomUri" minOccurs="0" maxOccurs="1"/>
+      <xs:element name="rights" type="atom:atomTextConstruct" minOccurs="0" maxOccurs="1"/>
+      <xs:element name="subtitle" type="atom:atomTextConstruct" minOccurs="0" maxOccurs="1"/>
+      <xs:element name="title" type="atom:atomTextConstruct" minOccurs="1" maxOccurs="1"/>
+      <xs:element name="updated" type="atom:atomDateConstruct" minOccurs="1" maxOccurs="1"/>
+      <xs:element name="entry" type="atom:atomEntryConstruct" minOccurs="0" maxOccurs="unbounded"/>
+      <xs:any namespace="##other" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence>
+    <xs:attributeGroup ref="atom:atomCommonAttributes"/>
+  </xs:complexType>
+
+  <!-- Attribute Groups -->
+  <xs:attributeGroup name="atomCommonAttributes">
+    <xs:attribute name="base" type="atom:atomUri"/>
+    <xs:attribute name="lang" type="atom:atomLanguageTag"/>
+    <xs:attribute ref="xml:lang"/>
+    <xs:attribute ref="xml:base"/>
+      <xs:anyAttribute namespace="##other" processContents="lax"/>
+    </xs:attributeGroup>
+  </xs:schema>
+  

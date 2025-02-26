@@ -1,0 +1,44 @@
+.favourite-btn {
+    cursor: pointer;
+    color: #ccc;
+    font-size: 1.5rem;
+    transition: color 0.3s ease;
+}
+
+.favourite-btn.favourited {
+    color: red;
+}
+
+.badge {
+    margin-right: 5px;
+    margin-bottom: 5px;
+}
+
+.pagination {
+    justify-content: center;
+    margin-bottom: 30px;
+}
+
+.card {
+    max-width: 100%;
+    margin: 0 auto 20px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.card-img {
+    height: 200px;
+    object-fit: cover;
+}
+
+#loadingIndicator {
+    display: none;
+}
+
+/* Aseguramos que el feedUrlInput no se expanda demasiado en pantallas pequeñas */
+.feed-url-container {
+    display: flex;
+}
+
+#feedUrlInput {
+    flex: 1;
+}
